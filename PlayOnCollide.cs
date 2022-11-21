@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PlayOnCollide : MonoBehaviour
 {
-    public AudioSource audiosource=null;
-    public string otherTag="";
+    public AudioSource audiosource = null;
+    public ParticleSystem particles = null;
+    public string otherTag = "";
 
     void Start()
     {
@@ -13,12 +14,21 @@ public class PlayOnCollide : MonoBehaviour
         {
             audiosource = GetComponent<AudioSource>();
         }
+        if (!particles)
+        {
+            particles = GetComponent<ParticleSystem>();
+        }
     }
 
 
     void OnTriggerEnter(Collider other)
     {
         if ((otherTag == "") || (other.tag == otherTag))
-            audiosource.Play();
+        {
+            if (audiosource)
+                audiosource.Play();
+            if (particles)
+                particles.Play();
+        }
     }
 }
