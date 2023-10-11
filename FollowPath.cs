@@ -6,19 +6,49 @@ public class FollowPath : MonoBehaviour
 {
     public List<Transform> waypoints;
     public float duration=1.0f;
+    public bool playOnStart=true;
+    public bool loop=true;
+    private float startTime=0.0f;
+    private bool playing=false;
 
     void Start()
     {
-        
+        if (playOnStart)
+            Play();
+        transform.position = waypoints[0].position;
+        transform.LookAt(waypoints[1]);
     }
+        
 
     void Update()
     {
-        float t = Time.time % duration;
-        int segment = (int)((t/duration) * (waypoints.Count-1));
-        float segmentDuration = duration / (waypoints.Count-1);
-        float a = (t - segment * segmentDuration) / segmentDuration;
-        transform.position = Vector3.Lerp(waypoints[segment].position, waypoints[segment+1].position, a);
-        transform.LookAt(waypoints[segment+1]);
+        if (playing)
+            {
+            if ((Time.time-startTime >= duration) && (!loop))
+                {
+                transform.position = waypoints[waypoints.Count-1].position;
+                Stop();
+                }
+            else
+                {
+                float t = (Time.time - startTime) % duration;
+                int segment = (int)((t/duration) * (waypoints.Count-1));
+                float segmentDuration = duration / (waypoints.Count-1);
+                float a = (t - segment * segmentDuration) / segmentDuration;
+                transform.position = Vector3.Lerp(waypoints[segment].position, waypoints[segment+1].position, a);
+                transform.LookAt(waypoints[segment+1]);
+                }
+            }
+    }
+
+    public void Play()
+    {
+        playing = true;
+        startTime = Time.time;
+    }
+
+    public void Stop()
+    {
+        playing = false;
     }
 }
